@@ -189,7 +189,7 @@ $light_gray: #eee;
   width: 100%;
   background-color: $bg;
   overflow: hidden;
-  background-image: url('~@/assets/login.jpg');
+  background-image: url('~@/assets/common/login.jpg');
   background-position: center;
 
   .login-form {

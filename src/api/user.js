@@ -14,3 +14,10 @@ export function getUserInfo() {
     method: 'post'
   })
 }
+
+export function getUserAvatarById(id) {
+  return request({
+    url: '/sys/user/' + id,
+    method: 'get'
+  })
+}

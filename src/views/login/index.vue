@@ -5,7 +5,7 @@
       :model="loginForm"
       :rules="loginRules"
       class="login-form"
-      auto-complete="on"
+      auto-complete="off"
       label-position="left"
     >
 
@@ -65,7 +65,8 @@
 </template>
 
 <script>
-import { login } from '@/api/user'
+// import { login } from '@/api/user'
+import { setToken } from '../../store/modules/user'
 export default {
   name: 'Login',
   data() {
@@ -121,11 +122,13 @@ export default {
         this.$refs.password.focus()
       })
     },
+    // login BUtton
     async handleLogin() {
       try {
         await this.$refs.loginForm.validate()
-        const res = await login(this.loginForm)
-        console.log('校验通过', res)
+        // 调用
+        await this.$store.dispatch('user/login', this.loginForm)
+        // this.$router.push('/')
       } catch (error) {
         console.log(error)
       }

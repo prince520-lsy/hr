@@ -8,7 +8,7 @@ const service = axios.create({
   // withCredentials: true, // send cookies when cross-domain requests
   timeout: 5000 // request timeout
 })
-const time = 5000// 前端设置token有效时间
+const time = 50000000000// 前端设置token有效时间
 
 // request interceptor
 service.interceptors.request.use((config) => {
@@ -18,7 +18,7 @@ service.interceptors.request.use((config) => {
     const loginTime = localStorage.getItem('loginTime')
     if (currentTime - loginTime > time) {
       // 登录超时
-      store.dispatch('user/login')
+      store.dispatch('user/logout')// 调用登录退出函数
       router.push('/login')
       return Promise.reject(new Error('登录超时，请重新登录---前端设置token失效时间'))
     }
@@ -47,7 +47,7 @@ service.interceptors.response.use(
     }
   },
   (error) => {
-    if (error.response.data.code === 10002) {
+    if (error.response && error.response.data.code === 10002) {
       store.dispatch('user/logout')
       router.push('/login')
       Message.error('登录超时，请重新登录')

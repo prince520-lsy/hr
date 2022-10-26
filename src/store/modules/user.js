@@ -11,6 +11,7 @@ export default {
     setToken(state, token) {
       state.token = token
       setToken(token)
+      localStorage.setItem('loginTime', Date.now())
     },
     setUserInfo(state, userInfo) {
       state.userInfo = userInfo

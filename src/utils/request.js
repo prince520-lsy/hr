@@ -1,3 +1,4 @@
+import router from '@/router'
 import store from '@/store'
 import axios from 'axios'
 import { Message } from 'element-ui'
@@ -7,11 +8,20 @@ const service = axios.create({
   // withCredentials: true, // send cookies when cross-domain requests
   timeout: 5000 // request timeout
 })
+const time = 5000// 前端设置token有效时间
 
 // request interceptor
 service.interceptors.request.use((config) => {
   const token = store.state.user.token
   if (token) {
+    const currentTime = Date.now()// 获取当前时间戳
+    const loginTime = localStorage.getItem('loginTime')
+    if (currentTime - loginTime > time) {
+      // 登录超时
+      store.dispatch('user/login')
+      router.push('/login')
+      return Promise.reject(new Error('登录超时，请重新登录---前端设置token失效时间'))
+    }
     config.headers.Authorization = `Bearer ${token}`
   }
   return config
@@ -21,7 +31,7 @@ service.interceptors.request.use((config) => {
 // 响应拦截器
 service.interceptors.response.use(
   (response) => {
-    const { success, message, data } = response.data
+    const { success, message, data } = response.data// 对象解构
     if (success) {
     // 成功
       return data
@@ -37,11 +47,18 @@ service.interceptors.response.use(
     }
   },
   (error) => {
+    if (error.response.data.code === 10002) {
+      store.dispatch('user/logout')
+      router.push('/login')
+      Message.error('登录超时，请重新登录')
+    } else {
+      Message.error(error.message)
+    }
     // 网络层面失败 -- 触发这个函数
     // 比如：请求超时的时候，就会出现网络层面失败
     // console.log('网络层面失败', error)
     // console.dir(error)
-    Message.error(error.message)
+
     return Promise.reject(error)
   }
 )

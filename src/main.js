@@ -15,7 +15,7 @@ import router from './router'
 import '@/icons' // icon
 import '@/permission' // permission control
 
-import defaultImg from './assets/common/bigUserHeader.png'
+// import defaultImg from './assets/common/bigUserHeader.png'
 
 // set ElementUI lang to EN
 Vue.use(ElementUI, { locale })
@@ -26,9 +26,12 @@ Vue.config.productionTip = false
 
 Vue.directive('imgErr', {
   inserted(el, binding) {
+    console.log(el, binding)
     el.addEventListener('error', function() {
-      el.src = defaultImg
+      el.src = binding.value
+      // el.src = defaultImg
     })
+    el.src = el.src || binding.value
   }
 })
 new Vue({

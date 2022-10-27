@@ -115,3 +115,16 @@ export function param2Obj(url) {
   })
   return obj
 }
+//  列表转树形结构
+export function listToTree(list, id) {
+  const arr = []
+  list.forEach(item => {
+    if (item.pid === id) {
+      arr.push(item)
+      // 根据一级部门的id找二级部门
+
+      item.children = listToTree(list, item.id)
+    }
+  })
+  return arr
+}

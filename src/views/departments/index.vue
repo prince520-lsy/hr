@@ -13,7 +13,12 @@
               属性名需要转成串烧命名
               比如：treeNode 等价于 tree-node
              -->
-            <treeTool :is-company="false" :tree-node="data" @addEvent="addFn" />
+            <treeTool
+              :is-company="false"
+              :tree-node="data"
+              @addEvent="addFn"
+              @delEvent="delFn"
+            />
           </template>
         </el-tree>
       </el-card>
@@ -27,10 +32,10 @@
          -->
         <el-form ref="form" :model="formData" :rules="rules" label-width="120px">
           <el-form-item label="部门名称" prop="name">
-            <el-input v-model="formData.name" placeholder="1-50个字符" />
+            <el-input v-model.trim="formData.name" placeholder="1-50个字符" />
           </el-form-item>
           <el-form-item label="部门编码" prop="code">
-            <el-input v-model="formData.code" placeholder="1-50个字符" />
+            <el-input v-model.trim="formData.code" placeholder="1-50个字符" />
           </el-form-item>
           <el-form-item label="部门负责人" prop="manager">
             <!-- <el-input v-model="formData.manager" placeholder="请选择负责人" /> -->
@@ -44,7 +49,7 @@
             </el-select>
           </el-form-item>
           <el-form-item label="部门介绍" prop="introduce">
-            <el-input v-model="formData.introduce" type="textarea" placeholder="1-300个字符" />
+            <el-input v-model.trim="formData.introduce" type="textarea" placeholder="1-300个字符" />
           </el-form-item>
         </el-form>
         <template v-slot:footer>
@@ -60,15 +65,59 @@
 
 <script>
 import treeTool from './components/treeTool.vue'
-import { getDepartment, addDepartment } from '@/api/departments'
+import { getDepartment, addDepartment, delDepartment } from '@/api/departments'
 import { listToTree } from '@/utils'
 import { getEmployees } from '@/api/employees'
 export default {
   components: { treeTool },
   data() {
-    const checkName = (rule, value, callback) => {
-      console.log(rule, value, callback)
-      callback(666)
+    // 校验部门名称
+    const checkName = (rule, val, callback) => {
+      // rule: 当前的校验规则
+      // val: 当前输入的内容
+      // callback：函数，当我们直接调用这个函数的时候表示 校验通过，
+      // 当我们调用这个函数并传入一些参数的时候，表示校验不通过。
+      // （只要传入了数据就表示校验不通过，无论传入的是什么都如此）
+      /**
+       * 需求：新增的部门名称不能和原来已经存在的同级部门名称重复
+       * 1、获取到用户输入的新的部门名称 --- val
+       * 2、获取所有同级部门列表 --- 不能直接获取到
+       *   2-1、获取到所有的部门数据 ---- originDepts
+       *   2-2、怎么判断部门列表中的某一个部门是和val同级部门 ？
+       *      答：当他们的pid值一样的时候，说明他们是同级部门
+       * */
+      // console.log(80, val)
+      // 找同级部门
+      // console.log(this.originDepts, this.formData.pid)
+      const agreeDept = this.originDepts.filter(item => item.pid === this.formData.pid)
+      console.log(86, agreeDept)
+      // let isRepeat = false // true表示重名了，否则没有重名
+      // agreeDept.forEach(item => {
+      //   if (item.name === val) {
+      //     isRepeat = true
+      //   }
+      // })
+      // true表示没有重名，false表示重名了
+      // every是数组的方法
+      // 该方法表示，只需要判断到回调函数中的条件不成立，立刻终止循环并返回false
+      // 否则返回true
+      const isRepeat = agreeDept.every(item => item.name !== val)
+      if (!isRepeat) {
+        callback(`${val} - 部门名称已经存在`)
+      } else {
+        callback()
+      }
+    }
+    // 校验部门编码
+    const checkCode = (rule, val, callback) => {
+      // 需求：新增的部门编码不能和已存在的其他部门编码重名 --- 需要和所有其他部门进行比较
+      // isRepeat值为true表示没有重复的code 否则有
+      const isRepeat = this.originDepts.every(item => item.code !== val)
+      if (isRepeat) {
+        callback()
+      } else {
+        callback(`部门编码：${val}重复了`)
+      }
     }
     return {
       company: {
@@ -83,16 +132,19 @@ export default {
         name: '', // 部门名称
         manager: '', // 部门负责人
         introduce: '', // 介绍
-        pid: '' // 父级部门id
+        pid: '' // 父级部门id -- 新增的时候传递给后端，告诉后端要为id为this.form.pid的部门添加子部门
       },
       rules: {
         code: [
           { required: true, message: '部门编码不能为空！', trigger: 'blur' },
-          { min: 1, max: 50, message: '部门编码长度1到50个字符', trigger: 'blur' }
+          { min: 1, max: 50, message: '部门编码长度1到50个字符', trigger: 'blur' },
+          // 需求：新增的部门编码不能和已存在的其他部门编码重名 --- 需要和所有其他部门进行比较
+          { validator: checkCode, trigger: 'blur' }
         ],
         name: [
           { required: true, message: '部门名称不能为空！', trigger: 'blur' },
           { min: 1, max: 50, message: '部门名称长度1到50个字符', trigger: 'blur' },
+          // 需求：判断新增的部门名称不能和已存在的同级部门名称相同
           { validator: checkName, trigger: 'blur' }
         ],
         manager: [
@@ -103,14 +155,31 @@ export default {
           { min: 1, max: 300, message: '部门介绍长度1到300个字符', trigger: 'blur' }
         ]
       },
-      userList: []
+      userList: [], // 部门负责人列表
+      originDepts: [] // 部门列表 --- 未转换树形结构的数据
     }
   },
   async created() {
     this.getDepartmentList()
+    // 获取部门负责人
     this.userList = await getEmployees()
   },
   methods: {
+    // 删除部门
+    delFn(id) {
+      this.$confirm('您是否确定要删除该部门吗？', '提示', {
+        type: 'warning'
+      }).then(async() => {
+        // 调用接口 实现删除
+        await delDepartment(id)
+        // 更新页面渲染的部门列表
+        this.getDepartmentList()
+      }).catch((err) => {
+        // catch函数不仅仅可以捕获用户点击的取消按钮，也可以捕获then中发生的错误信息
+        console.log('用户点击了取消按钮:', err)
+      })
+    },
+    // 确定新增
     async submit() {
       // 表单验证
       await this.$refs.form.validate()
@@ -122,17 +191,23 @@ export default {
       this.cancelFn()
     },
     addFn(id) {
-      // console.log('当前部门id', id)
+      console.log('当前点击的部门id', id)
+      this.formData.pid = id // 保存pid
       // 控制弹窗显示
-      this.formData.pid = id// 保存当前点击的pid
       this.showDialog = true
     },
     // 关闭弹窗
     cancelFn() {
       this.showDialog = false
+      // 清空数据
       this.formData = {
-        pid: ''
+        code: '', // 部门编码
+        name: '', // 部门名称
+        manager: '', // 部门负责人
+        introduce: '', // 介绍
+        pid: '' // 父级部门id -- 新增的时候传递给后端，告诉后端要为id为this.form.pid的部门添加子部门
       }
+      // 移除校验结果 --- 这个方法也可以清空数据（但是只能清空表单绑定的数据）
       this.$refs.form.resetFields()
     },
     // 获取部门列表数据
@@ -144,9 +219,39 @@ export default {
       // 保存部门列表
       // this.treeData = res.depts
       this.treeData = listToTree(res.depts, '')
+      this.originDepts = res.depts
     }
     // 列表转树形结构 数据
-
+    // 为了使我们封装的listToTree方法能够更加通用
+    // 因此我们可以把要改造的数据以及一级部门的pid用参数的
+    // 形式传入给函数。
+    /**
+     *  递归函数：
+     *  像listToTree函数一样，有自己调用自己函数的形式的函数我们称它为递归函数
+     *    注意：递归函数一定要有一个结束条件
+     * */
+    // listToTree(list, id) {
+    //   const arr = []
+    //   list.forEach(item => {
+    //     // 找一级部门 -- 当部门的pid值为空字符串说明该部门为一级部门
+    //     if (item.pid === id) {
+    //       arr.push(item)
+    //       // 根据一级部门的id找二级部门
+    //       // 只需要判断一级部门id等于另一个部门的pid即可，当两个值相等的时候，
+    //       // 说明另一个部门就是该部门的子部门
+    //       // 方法一：
+    //       // item.children = [] // 表示给item对象添加children属性，并赋值为空数组
+    //       // list.forEach(val => {
+    //       //   if (val.pid === item.id) {
+    //       //     item.children.push(val)
+    //       //   }
+    //       // })
+    //       // 方法二：
+    //       item.children = this.listToTree(list, item.id)
+    //     }
+    //   })
+    //   return arr
+    // }
   }
 }
 </script>

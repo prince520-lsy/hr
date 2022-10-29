@@ -15,3 +15,10 @@ export function addDepartment(data) {
     data
   })
 }
+
+export function delDepartment(id) {
+  return request({
+    url: `/company/department/${id}`,
+    method: 'delete'
+  })
+}

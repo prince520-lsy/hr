@@ -18,7 +18,7 @@
            -->
           <el-dropdown-item command="add" @click.native="addFn">添加子部门</el-dropdown-item>
           <el-dropdown-item v-if="isCompany==false" command="edit">编辑部门</el-dropdown-item>
-          <el-dropdown-item v-if="isCompany==false" command="del">删除部门</el-dropdown-item>
+          <el-dropdown-item v-if="isCompany==false" command="del" @click.native="delFn">删除部门</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
     </div>
@@ -46,6 +46,11 @@ export default {
       // 子传父 通知父组件 控制新增部门的弹窗显示
       // 并把当前点击的部门id传递给父组件
       this.$emit('addEvent', this.treeNode.id)
+    },
+    // 删除
+    delFn() {
+      // 子传父
+      this.$emit('delEvent', this.treeNode.id)
     }
   }
 }

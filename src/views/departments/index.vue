@@ -18,11 +18,12 @@
               :tree-node="data"
               @addEvent="addFn"
               @delEvent="delFn"
+              @editEvent="editFn"
             />
           </template>
         </el-tree>
       </el-card>
-      <!-- 新增部门 弹窗 -->
+      <!-- 新增/编辑部门 弹窗 -->
       <el-dialog title="新增部门" :visible="showDialog" @close="cancelFn">
         <!--
           1、给form组件绑定model属性 值就是表单的数据对象
@@ -65,9 +66,9 @@
 
 <script>
 import treeTool from './components/treeTool.vue'
-import { getDepartment, addDepartment, delDepartment } from '@/api/departments'
+import { getDepartment, addDepartment, delDepartment, departmentDetail, editDepartment } from '@/api/departments'
 import { listToTree } from '@/utils'
-import { getEmployees } from '@/api/employees'
+import { getEmployeeSimple } from '@/api/employees'
 export default {
   components: { treeTool },
   data() {
@@ -88,8 +89,21 @@ export default {
        * */
       // console.log(80, val)
       // 找同级部门
-      // console.log(this.originDepts, this.formData.pid)
-      const agreeDept = this.originDepts.filter(item => item.pid === this.formData.pid)
+      // 当编辑部门的到时候，编辑的那个部门是本身已经存在在this.originDepts列表数组中的
+      // 因此我们在做编辑部门的时候，筛选同级部门还是把自身排除在外
+      let agreeDept
+      if (this.formData.id) {
+        // 编辑
+        agreeDept = this.originDepts.filter(item => {
+          // 如何排除自身，当两个部门的id相同的时候表示，这两个部门是同一个部门
+          // 因为后端设计数据的时候，给每一个部门的id都是唯一。
+          return item.id !== this.formData.id && item.pid === this.formData.pid
+        })
+      } else {
+        // 新增
+        agreeDept = this.originDepts.filter(item => item.pid === this.formData.pid)
+      }
+
       console.log(86, agreeDept)
       // let isRepeat = false // true表示重名了，否则没有重名
       // agreeDept.forEach(item => {
@@ -112,7 +126,18 @@ export default {
     const checkCode = (rule, val, callback) => {
       // 需求：新增的部门编码不能和已存在的其他部门编码重名 --- 需要和所有其他部门进行比较
       // isRepeat值为true表示没有重复的code 否则有
-      const isRepeat = this.originDepts.every(item => item.code !== val)
+      // 因为在编辑部门的时候 当前编辑的部门是已经存在在this.originDepts列表中的
+      // 因此比较的时候发生自身进行比较的问题，所以编辑的时候应该要排除自己进行比较
+      let isRepeat
+      if (this.formData.id) {
+        // 编辑
+        isRepeat = this.originDepts.filter(item => item.id !== this.formData.id)
+          .every(item => item.code !== val)
+      } else {
+        // 新增
+        isRepeat = this.originDepts.every(item => item.code !== val)
+      }
+
       if (isRepeat) {
         callback()
       } else {
@@ -162,9 +187,17 @@ export default {
   async created() {
     this.getDepartmentList()
     // 获取部门负责人
-    this.userList = await getEmployees()
+    this.userList = await getEmployeeSimple()
   },
   methods: {
+    // 编辑部门
+    async editFn(id) {
+      this.showDialog = true
+      const res = await departmentDetail(id)
+      // console.log(173, res)
+      // 回显
+      this.formData = res
+    },
     // 删除部门
     delFn(id) {
       this.$confirm('您是否确定要删除该部门吗？', '提示', {
@@ -183,8 +216,13 @@ export default {
     async submit() {
       // 表单验证
       await this.$refs.form.validate()
-      // 调用接口
-      await addDepartment(this.formData)
+      if (this.formData.id) { // 有id说明是编辑
+      // 调用编辑接口
+        await editDepartment(this.formData)
+      } else {
+      // 调用新增接口
+        await addDepartment(this.formData)
+      }
       // 刷新页面
       this.getDepartmentList()
       // 关闭弹窗

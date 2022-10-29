@@ -17,7 +17,7 @@
            可以让我们实现在自定义组件上绑定原生js事件，这个修饰符就是.native
            -->
           <el-dropdown-item command="add" @click.native="addFn">添加子部门</el-dropdown-item>
-          <el-dropdown-item v-if="isCompany==false" command="edit">编辑部门</el-dropdown-item>
+          <el-dropdown-item v-if="isCompany==false" command="edit" @click.native="editFn">编辑部门</el-dropdown-item>
           <el-dropdown-item v-if="isCompany==false" command="del" @click.native="delFn">删除部门</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
@@ -51,6 +51,9 @@ export default {
     delFn() {
       // 子传父
       this.$emit('delEvent', this.treeNode.id)
+    },
+    editFn() {
+      this.$emit('editEvent', this.treeNode.id)
     }
   }
 }

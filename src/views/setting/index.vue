@@ -18,7 +18,7 @@
               <el-table-column label="角色" prop="name" width="300" />
               <el-table-column label="描述" prop="description" />
               <el-table-column label="操作" width="250">
-                <template v-slot="{row}">
+                <template v-slot="{}">
                   <el-button type="success" size="small">分配权限</el-button>
                   <el-button type="primary" size="small">编辑</el-button>
                   <el-button type="danger" size="small">删除</el-button>

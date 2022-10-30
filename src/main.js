@@ -32,8 +32,20 @@ Vue.directive('imgErr', {
       // el.src = defaultImg
     })
     el.src = el.src || binding.value
+  },
+  componentUpdated(el, binding) {
+    el.addEventListener('error', function() {
+      el.src = binding.value
+      // el.src = defaultImg
+    })
+    el.src = el.src || binding.value
   }
 })
+
+// 注册全局组件
+import PageTools from './components/PageTools/index.vue'
+Vue.component('PageTools', PageTools)
+
 new Vue({
   el: '#app',
   router,

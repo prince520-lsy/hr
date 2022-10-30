@@ -7,3 +7,11 @@ export function getEmployeeSimple(params) {
     method: 'get'
   })
 }
+
+export function employeesList(params) {
+  return request({
+    url: '/sys/user',
+    method: 'get',
+    params
+  })
+}

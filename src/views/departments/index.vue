@@ -24,7 +24,7 @@
         </el-tree>
       </el-card>
       <!-- 新增/编辑部门 弹窗 -->
-      <el-dialog title="新增部门" :visible="showDialog" @close="cancelFn">
+      <el-dialog :title="formData.id?'编辑部门':'新增部门'" :visible="showDialog" @close="cancelFn">
         <!--
           1、给form组件绑定model属性 值就是表单的数据对象
           2、给form组件绑定rules属性

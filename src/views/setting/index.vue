@@ -39,7 +39,20 @@
 
           </el-tab-pane>
           <el-tab-pane label="公司信息">
-            公司信息 --- 内容
+            <el-form disabled label-width="120px">
+              <el-form-item label="公司名称">
+                <el-input v-model="company.name" />
+              </el-form-item>
+              <el-form-item label="公司地址">
+                <el-input v-model="company.companyAddress" />
+              </el-form-item>
+              <el-form-item label="公司邮箱">
+                <el-input v-model="company.mailbox" />
+              </el-form-item>
+              <el-form-item label="备注">
+                <el-input v-model="company.remarks" />
+              </el-form-item>
+            </el-form>
           </el-tab-pane>
         </el-tabs>
       </el-card>
@@ -59,7 +72,7 @@
 </template>
 
 <script>
-import { roleList, delRole } from '@/api/setting'
+import { roleList, delRole, getCompanyById } from '@/api/setting'
 import addRole from './components/addRole.vue'
 export default {
   components: { addRole },
@@ -69,12 +82,16 @@ export default {
       total: 0, // 角色的总数量
       page: 1, // 页码
       pagesize: 2, // 每页的条数
-      showDialog: false // 控制弹窗组件的显示隐藏
+      showDialog: false, // 控制弹窗组件的显示隐藏
+      company: {} // 公司信息
     }
   },
-  created() {
+  async created() {
     // 获取角色列表
     this.getRoleList()
+    // 获取公司信息
+    const id = this.$store.state.user.userInfo.companyId // 公司id
+    this.company = await getCompanyById(id)
   },
   methods: {
     // 编辑

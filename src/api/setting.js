@@ -39,3 +39,10 @@ export function editRole(data) {
     data
   })
 }
+
+// 根据id查询企业
+export function getCompanyById(id) {
+  return request({
+    url: '/company/' + id
+  })
+}

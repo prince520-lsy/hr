@@ -9,7 +9,7 @@
         <template #after>
           <el-button size="small" type="primary">导入</el-button>
           <el-button size="small" type="danger">导出</el-button>
-          <el-button size="small" type="success">新增员工</el-button>
+          <el-button size="small" type="success" @click="addFn">新增员工</el-button>
         </template>
       </PageTools>
       <!-- 表格 -->
@@ -94,6 +94,7 @@
           />
         </el-row>
       </el-card>
+      <AddEmployee :show-dialog="showDialog" />
     </div>
   </div>
 </template>
@@ -101,14 +102,17 @@
 <script>
 import { employeesList } from '@/api/employees'
 import employees from '@/api/constant/employees'
+import AddEmployee from './components/addEmployee.vue'
 export default {
+  components: { AddEmployee },
   data() {
     return {
       employeeList: [], // 员工列表数据
       total: 0, // 员工总数量
       page: 1, // 页码
       size: 5, // 每页请求的数量
-      hireType: employees.hireType
+      hireType: employees.hireType,
+      showDialog: false // 控制新增弹窗组件的显示隐藏
     }
   },
   created() {
@@ -116,6 +120,10 @@ export default {
     this.getEmployeesList()
   },
   methods: {
+    // 新增员工
+    addFn() {
+      this.showDialog = true
+    },
     // 格式日期
     formatDate(time) {
       if (time) { // 时间存在的时候才进行处理

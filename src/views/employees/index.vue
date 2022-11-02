@@ -7,7 +7,7 @@
           共22条记录
         </template>
         <template #after>
-          <el-button size="small" type="primary">导入</el-button>
+          <el-button size="small" type="primary" @click="$router.push('/import')">导入</el-button>
           <el-button size="small" type="danger">导出</el-button>
           <el-button size="small" type="success" @click="addFn">新增员工</el-button>
         </template>
@@ -77,10 +77,10 @@
             </template>
           </el-table-column>
           <el-table-column label="操作" width="200px">
-            <template>
+            <template v-slot="{row}">
               <el-button type="text">查看</el-button>
               <el-button type="text">角色</el-button>
-              <el-button type="text">删除</el-button>
+              <el-button type="text" @click="delFn(row.id)">删除</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -94,13 +94,16 @@
           />
         </el-row>
       </el-card>
-      <AddEmployee :show-dialog="showDialog" />
+      <AddEmployee
+        :show-dialog.sync="showDialog"
+        @updateEvent="getEmployeesList"
+      />
     </div>
   </div>
 </template>
 
 <script>
-import { employeesList } from '@/api/employees'
+import { employeesList, delEmployee } from '@/api/employees'
 import employees from '@/api/constant/employees'
 import AddEmployee from './components/addEmployee.vue'
 export default {
@@ -120,6 +123,25 @@ export default {
     this.getEmployeesList()
   },
   methods: {
+    // 删除
+    delFn(id) {
+      this.$confirm('是否确定删除？', '提示', {
+        type: 'warning'
+      }).then(async() => {
+        // 调用接口
+        await delEmployee(id)
+        // 删除到最后一页的最后一条数据后会出现 页面没有数据的情况
+        // 因此需要判断当删除最有一页的最后一条数据的时候，把页码减一
+        // 再调用接口刷新列表
+        if (this.employeeList.length === 1 && this.page !== 1) {
+          this.page--
+        }
+        // 更新列表
+        this.getEmployeesList()
+      }).catch(err => {
+        console.log('取消：', err)
+      })
+    },
     // 新增员工
     addFn() {
       this.showDialog = true

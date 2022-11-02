@@ -32,6 +32,16 @@ export const constantRoutes = [
       }
     ]
   },
+  {
+    path: '/import',
+    component: Layout,
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/import/index')
+      }
+    ]
+  },
 
   {
     path: '/404',

@@ -85,6 +85,9 @@ Vue.directive('imgErr', {
 import PageTools from './components/PageTools/index.vue'
 Vue.component('PageTools', PageTools)
 
+import UploadExcel from './components/UploadExcel/index.vue'
+Vue.component('UploadExcel', UploadExcel)
+
 /**
  * 全局过滤器
  * 作用：可以传入数据给过滤器，过滤器中对这个数据进行处理，然后返回处理后的数据.

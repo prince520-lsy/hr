@@ -6,7 +6,7 @@
           3、给form-item绑定prop属性
           4、v-model双向绑定表单
        -->
-    <el-form :model="formData" :rules="rules" label-width="120px">
+    <el-form ref="form" :model="formData" :rules="rules" label-width="120px">
       <el-form-item label="姓名" prop="username">
         <el-input v-model="formData.username" placeholder="请输入姓名" />
       </el-form-item>
@@ -58,8 +58,8 @@
     </el-form>
     <template v-slot:footer>
       <el-row type="flex" justify="center">
-        <el-button type="primary" size="small">确定</el-button>
-        <el-button size="small">取消</el-button>
+        <el-button type="primary" size="small" @click="submit">确定</el-button>
+        <el-button size="small" @click="cancle">取消</el-button>
       </el-row>
     </template>
   </el-dialog>
@@ -68,6 +68,7 @@
 import employees from '@/api/constant/employees'
 import { getDepartment } from '@/api/departments'
 import { listToTree } from '@/utils/index'
+import { addEmployess } from '@/api/employees'
 export default {
   props: {
     showDialog: {
@@ -120,6 +121,17 @@ export default {
     this.departList = listToTree(res.depts, '')
   },
   methods: {
+
+    async submit() {
+      const res = await addEmployess(this.formData)
+      this.$parent.getEmployeeList()
+      this.$parent.showDialog = false
+      console.log(127, res)
+    },
+    cancle() {
+      console.log('cancle')
+      this.showDialog = !this.showDialog
+    },
     // 选中部门
     selectDepartment(data) {
       // data: 当前点击的部门对象

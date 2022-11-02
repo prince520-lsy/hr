@@ -1,17 +1,36 @@
-
+// 员工管理 接口
 import request from '@/utils/request'
 
-export function getEmployeeSimple(params) {
+// 获取员工简单列表
+export function getEmployeeSimple() {
   return request({
-    url: '/sys/user/simple',
-    method: 'get'
+    url: '/sys/user/simple'
   })
 }
 
+// 获取员工列表
 export function employeesList(params) {
   return request({
     url: '/sys/user',
-    method: 'get',
     params
+  })
+}
+
+// 新增员工
+export function addEmployess(data) {
+  return request({
+    url: '/sys/user',
+    method: 'post',
+    data
+  })
+}
+
+/**
+ * 删除员工接口
+ * ****/
+export function delEmployee(id) {
+  return request({
+    url: `/sys/user/${id}`,
+    method: 'delete'
   })
 }

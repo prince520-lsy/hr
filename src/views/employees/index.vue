@@ -8,7 +8,7 @@
         </template>
         <template #after>
           <el-button size="small" type="primary" @click="$router.push('/import')">导入</el-button>
-          <el-button size="small" type="danger">导出</el-button>
+          <el-button size="small" type="danger" @click="exportFn">导出</el-button>
           <el-button size="small" type="success" @click="addFn">新增员工</el-button>
         </template>
       </PageTools>
@@ -106,6 +106,7 @@
 import { employeesList, delEmployee } from '@/api/employees'
 import employees from '@/api/constant/employees'
 import AddEmployee from './components/addEmployee.vue'
+import { export_json_to_excel } from '@/vendor/Export2Excel'
 export default {
   components: { AddEmployee },
   data() {
@@ -123,6 +124,25 @@ export default {
     this.getEmployeesList()
   },
   methods: {
+    // 导出
+    async exportFn() {
+      // 获取员工列表数据
+      // const res = await employeesList({
+      //   page: 1,
+      //   size: this.total
+      // })
+      // console.log(129, res)
+      // 导出表格函数的使用
+      const header = ['手机号', '姓名', '入职日期', '转正日期', '工号']
+      const data = [
+        [1523454657, '小敏', '2022-05-01', '2022-08-01', '12345'],
+        [1523454652, '小方', '2022-05-01', '2022-08-01', '12345']
+      ]
+      export_json_to_excel({
+        header, // 表头 数组
+        data // 内容，是一个二维数组
+      })
+    },
     // 删除
     delFn(id) {
       this.$confirm('是否确定删除？', '提示', {

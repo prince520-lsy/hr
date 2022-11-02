@@ -1,11 +1,11 @@
 <template>
-  <el-dialog title="新增员工" :visible="showDialog">
+  <el-dialog title="新增员工" :visible="showDialog" @close="closeFn">
     <!--
-          1、给form组件添加model属性
-          2、给form组件绑定rules
-          3、给form-item绑定prop属性
-          4、v-model双向绑定表单
-       -->
+        1、给form组件添加model属性
+        2、给form组件绑定rules
+        3、给form-item绑定prop属性
+        4、v-model双向绑定表单
+     -->
     <el-form ref="form" :model="formData" :rules="rules" label-width="120px">
       <el-form-item label="姓名" prop="username">
         <el-input v-model="formData.username" placeholder="请输入姓名" />
@@ -59,7 +59,7 @@
     <template v-slot:footer>
       <el-row type="flex" justify="center">
         <el-button type="primary" size="small" @click="submit">确定</el-button>
-        <el-button size="small" @click="cancle">取消</el-button>
+        <el-button size="small" @click="closeFn">取消</el-button>
       </el-row>
     </template>
   </el-dialog>
@@ -68,7 +68,7 @@
 import employees from '@/api/constant/employees'
 import { getDepartment } from '@/api/departments'
 import { listToTree } from '@/utils/index'
-import { addEmployess } from '@/api/employees'
+import { addEmployee } from '@/api/employees'
 export default {
   props: {
     showDialog: {
@@ -121,35 +121,51 @@ export default {
     this.departList = listToTree(res.depts, '')
   },
   methods: {
-
-    async submit() {
-      const res = await addEmployess(this.formData)
-      this.$parent.getEmployeeList()
-      this.$parent.showDialog = false
-      console.log(127, res)
-    },
-    cancle() {
-      console.log('cancle')
-      this.showDialog = !this.showDialog
-    },
     // 选中部门
     selectDepartment(data) {
       // data: 当前点击的部门对象
       this.formData.departmentName = data.name
       //   隐藏部门列表
       this.isShow = false
+    },
+    // 确定 新增
+    async submit() {
+      // 表单校验
+      await this.$refs.form.validate()
+      // 调用接口
+      await addEmployee(this.formData)
+      // 更新列表
+      this.$emit('updateEvent')
+      // 关闭弹窗
+      this.closeFn()
+    },
+    closeFn() {
+      // 关闭弹窗
+      this.$emit('update:showDialog', false)
+      // 清空数据
+      this.formData = {
+        username: '', // 姓名
+        mobile: '', // 手机号码
+        formOfEmployment: '', // 聘用形式
+        workNumber: '', // 工号
+        departmentName: '', // 组织名称
+        timeOfEntry: '', // 入职时间
+        correctionTime: '' // 转正时间
+      }
+      // 清空校验规则
+      this.$refs.form.resetFields()
     }
   }
 }
 </script>
-  <style lang="scss" scoped>
-  .depts-box{
-      .depts-tree{
-          position: absolute;
-          z-index: 1;
-          width: 100%;
-          height: 150px;
-          overflow: auto;
-      }
-  }
-  </style>
+<style lang="scss" scoped>
+.depts-box{
+    .depts-tree{
+        position: absolute;
+        z-index: 1;
+        width: 100%;
+        height: 150px;
+        overflow: auto;
+    }
+}
+</style>

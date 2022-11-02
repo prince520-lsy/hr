@@ -17,7 +17,7 @@ export function employeesList(params) {
 }
 
 // 新增员工
-export function addEmployess(data) {
+export function addEmployee(data) {
   return request({
     url: '/sys/user',
     method: 'post',
@@ -32,5 +32,14 @@ export function delEmployee(id) {
   return request({
     url: `/sys/user/${id}`,
     method: 'delete'
+  })
+}
+
+// 批量都员工
+export function importEmployee(data) {
+  return request({
+    url: '/sys/user/batch',
+    method: 'post',
+    data
   })
 }

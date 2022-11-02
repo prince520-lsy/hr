@@ -78,7 +78,7 @@
           </el-table-column>
           <el-table-column label="操作" width="200px">
             <template v-slot="{row}">
-              <el-button type="text">查看</el-button>
+              <el-button type="text" @click="toDetail(row.id)">查看</el-button>
               <el-button type="text">角色</el-button>
               <el-button type="text" @click="delFn(row.id)">删除</el-button>
             </template>
@@ -107,6 +107,7 @@ import { employeesList, delEmployee } from '@/api/employees'
 import employees from '@/api/constant/employees'
 import AddEmployee from './components/addEmployee.vue'
 import { export_json_to_excel } from '@/vendor/Export2Excel'
+import { formatDate } from '@/filters/index'
 export default {
   components: { AddEmployee },
   data() {
@@ -124,24 +125,53 @@ export default {
     this.getEmployeesList()
   },
   methods: {
+    toDetail(id) {
+      this.$router.push('./employees/detail/' + id)
+    },
     // 导出
     async exportFn() {
       // 获取员工列表数据
-      // const res = await employeesList({
-      //   page: 1,
-      //   size: this.total
-      // })
+      const res = await employeesList({
+        page: 1,
+        size: this.total
+      })
       // console.log(129, res)
+      // 把请求回来的数据转换为二维数据
+      const result = res.rows.map(item => {
+        return this.objToArr(item)
+      })
+      console.log(result)
       // 导出表格函数的使用
       const header = ['手机号', '姓名', '入职日期', '转正日期', '工号']
-      const data = [
-        [1523454657, '小敏', '2022-05-01', '2022-08-01', '12345'],
-        [1523454652, '小方', '2022-05-01', '2022-08-01', '12345']
-      ]
+      // const data = [
+      //   [1523454657, '小敏', '2022-05-01', '2022-08-01', '12345'],
+      //   [1523454652, '小方', '2022-05-01', '2022-08-01', '12345']
+      // ]
       export_json_to_excel({
         header, // 表头 数组
-        data // 内容，是一个二维数组
+        data: result // 内容，是一个二维数组
       })
+    },
+    objToArr(item) {
+      const list = []
+      // 处理。。。把对象中需要用到的属性值保存到list数组中
+      const userRelations = {
+        'mobile': '手机号',
+        'username': '姓名',
+        'timeOfEntry': '入职日期',
+        'correctionTime': '转正日期',
+        'workNumber': '工号'
+      }
+      for (const key in userRelations) {
+        let value = item[key]
+        // 获取到需要用到的属性名对应的值
+        if (key === 'timeOfEntry' || key === 'correctionTime') {
+          value = formatDate(value, 'yyyy/MM/dd')
+        }
+
+        list.push(value)
+      }
+      return list
     },
     // 删除
     delFn(id) {

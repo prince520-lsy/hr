@@ -21,3 +21,10 @@ export function getUserAvatarById(id) {
     method: 'get'
   })
 }
+
+// 获取用户头像 等等
+export function getUserInfoById(id) {
+  return request({
+    url: '/sys/user/' + id
+  })
+}

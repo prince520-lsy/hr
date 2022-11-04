@@ -1,6 +1,8 @@
 <template>
   <div class="user-info">
-    <!-- 个人信息 -->
+    <!-- 个人信息
+      用到的接口和“登录账户信息”同一个接口（更新和详情接口都一样）
+    -->
     <el-form label-width="220px">
       <!-- 工号 入职时间 -->
       <el-row class="inline-info">
@@ -58,7 +60,7 @@
         <el-col :span="12">
           <el-form-item label="员工头像">
             <!-- 放置上传图片 -->
-
+            <UploadImage />
           </el-form-item>
         </el-col>
       </el-row>
@@ -90,6 +92,7 @@
 
         <el-form-item label="员工照片">
           <!-- 放置上传图片 -->
+          <UploadImage />
         </el-form-item>
         <el-form-item label="国家/地区">
           <el-select v-model="formData.nationalArea" class="inputW2">
@@ -282,11 +285,12 @@
 </template>
 <script>
 import EmployeeEnum from '@/api/constant/employees'
-
+import { getUserInfoById } from '@/api/user'
+import { saveUserDetailById, getPersonalDetail, updatePersonal } from '@/api/employees'
 export default {
   data() {
     return {
-      userId: this.$route.params.id,
+      userId: this.$route.params.id, // 用户id
       EmployeeEnum, // 员工枚举数据
       userInfo: {},
       formData: {
@@ -354,12 +358,29 @@ export default {
       }
     }
   },
+  created() {
+    this.getUserInfo()
+    this.getPersonalInfo()
+  },
   methods: {
-    saveUser() {},
-    savePersonal() {
+    // 获取上方表单数据详情 并实现回显
+    async getUserInfo() {
+      this.userInfo = await getUserInfoById(this.userId)
+    },
+    // 更新上方表单数据
+    async saveUser() {
+      await saveUserDetailById(this.userInfo)
+    },
+    // 获取下方表单数据详情 并实现回显
+    async getPersonalInfo() {
+      this.formData = await getPersonalDetail(this.userId)
+    },
+    // 保存下方表单数据
+    async savePersonal() {
+      await updatePersonal(this.formData)
     }
   }
 }
 </script>
-  <style scoped>
-  </style>
+<style scoped>
+</style>

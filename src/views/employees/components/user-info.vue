@@ -60,7 +60,7 @@
         <el-col :span="12">
           <el-form-item label="员工头像">
             <!-- 放置上传图片 -->
-            <UploadImage />
+            <UploadImage ref="img1" />
           </el-form-item>
         </el-col>
       </el-row>
@@ -92,7 +92,6 @@
 
         <el-form-item label="员工照片">
           <!-- 放置上传图片 -->
-          <UploadImage />
         </el-form-item>
         <el-form-item label="国家/地区">
           <el-select v-model="formData.nationalArea" class="inputW2">
@@ -366,9 +365,17 @@ export default {
     // 获取上方表单数据详情 并实现回显
     async getUserInfo() {
       this.userInfo = await getUserInfoById(this.userId)
+      this.$refs.img1.imgUrl = this.userInfo.staffPhoto
     },
     // 更新上方表单数据
     async saveUser() {
+      if (this.$refs.img1.percent > 0 && this.$refs.img1.percent < 100) {
+        return this.$message.warning('图片上传中')
+      }
+      // 获取到最新上传的头像链接地址，复制给userInfo.staffPhoto即可
+      // 怎么获取到头像链接地址呢？答：可以通过ref属性获取到
+      // console.log(this.$refs.img1.imgUrl)
+      this.userInfo.staffPhoto = this.$refs.img1.imgUrl
       await saveUserDetailById(this.userInfo)
     },
     // 获取下方表单数据详情 并实现回显

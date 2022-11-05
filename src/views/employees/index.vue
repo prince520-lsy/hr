@@ -79,7 +79,7 @@
           <el-table-column label="操作" width="200px">
             <template v-slot="{row}">
               <el-button type="text" @click="toDetail(row.id)">查看</el-button>
-              <el-button type="text">角色</el-button>
+              <el-button type="text" @click="assignRole(row.id)">角色</el-button>
               <el-button type="text" @click="delFn(row.id)">删除</el-button>
             </template>
           </el-table-column>
@@ -94,10 +94,13 @@
           />
         </el-row>
       </el-card>
+      <!--新增员工 -->
       <AddEmployee
         :show-dialog.sync="showDialog"
         @updateEvent="getEmployeesList"
       />
+      <!-- 分配角色 -->
+      <AssignRole ref="assignRole" :show-dialog.sync="visibleDialog" />
     </div>
   </div>
 </template>
@@ -108,8 +111,9 @@ import employees from '@/api/constant/employees'
 import AddEmployee from './components/addEmployee.vue'
 import { export_json_to_excel } from '@/vendor/Export2Excel'
 import { formatDate } from '@/filters/index'
+import AssignRole from './components/assign-role.vue'
 export default {
-  components: { AddEmployee },
+  components: { AddEmployee, AssignRole },
   data() {
     return {
       employeeList: [], // 员工列表数据
@@ -117,7 +121,8 @@ export default {
       page: 1, // 页码
       size: 5, // 每页请求的数量
       hireType: employees.hireType,
-      showDialog: false // 控制新增弹窗组件的显示隐藏
+      showDialog: false, // 控制新增弹窗组件的显示隐藏
+      visibleDialog: false // 控制分配角色弹窗的显示隐藏
     }
   },
   created() {
@@ -125,8 +130,17 @@ export default {
     this.getEmployeesList()
   },
   methods: {
+    // 分配角色
+    assignRole(id) {
+      // 控制分配角色弹窗显示
+      this.visibleDialog = true
+      // 调用子组件获取员工信息接口
+      console.log(this.$refs.assignRole)
+      this.$refs.assignRole.getRoleIds(id)
+    },
+    // 跳转到详情页面
     toDetail(id) {
-      this.$router.push('./employees/detail/' + id)
+      this.$router.push('/employees/detail/' + id)
     },
     // 导出
     async exportFn() {
@@ -163,12 +177,11 @@ export default {
         'workNumber': '工号'
       }
       for (const key in userRelations) {
-        let value = item[key]
-        // 获取到需要用到的属性名对应的值
+        let value = item[key] // 获取到需要用到的属性名对应的值
         if (key === 'timeOfEntry' || key === 'correctionTime') {
+          // 格式化日期
           value = formatDate(value, 'yyyy/MM/dd')
         }
-
         list.push(value)
       }
       return list

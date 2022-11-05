@@ -17,3 +17,10 @@ export function addPermission(data) {
     data
   })
 }
+// 根据id删除权限
+export function delPermission(id) {
+  return request({
+    url: '/sys/permission/' + id,
+    method: 'delete'
+  })
+}

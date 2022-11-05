@@ -15,9 +15,17 @@
         <el-table-column label="描述" prop="description" />
         <el-table-column label="操作">
           <template v-slot="{row}">
-            <el-button v-if="row.pid==='0'" type="text" @click="addPerm(row.id,2)">添加</el-button>
+            <!--
+                因为系统只有2级权限，分别是：
+                页面访问权限（一级权限）
+                按钮操作权限（二级权限）
+                因此是没有第三级权限的，没有第三级权限也就意味着渲染二级权限的时候“添加”按钮不需要渲染
+                如何判断渲染的是多少级权限呢？答：可以通过pid判断
+                当pid的值为"0"的时候，表示渲染的是一级权限，否则不是
+               -->
+            <el-button v-if="row.pid === '0'" type="text" @click="addPerm(row.id,2)">添加</el-button>
             <el-button type="text">编辑</el-button>
-            <el-button type="text">删除</el-button>
+            <el-button type="text" @click="delFn(row.id)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -32,7 +40,7 @@
 </template>
 
 <script>
-import { getPermissionList } from '@/api/permission'
+import { getPermissionList, delPermission } from '@/api/permission'
 import { listToTree } from '@/utils/index'
 import AddPerm from './components/add-perm.vue'
 export default {
@@ -47,6 +55,20 @@ export default {
     this.getPermissionList()
   },
   methods: {
+    // 删除权限
+    delFn(id) {
+      this.$confirm('确定删除吗？', '提示', {
+        type: 'warning'
+      }).then(async() => {
+        // console.log('点击了确定按钮')
+        // 调用接口 实现删除
+        await delPermission(id)
+        // 刷新权限列表
+        this.getPermissionList()
+      }).catch(err => {
+        console.log('点击了取消按钮 或者 then中的代码报错了：', err)
+      })
+    },
     // 获取权限列表
     async getPermissionList() {
       const res = await getPermissionList()

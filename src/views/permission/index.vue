@@ -4,32 +4,62 @@
       <PageTools :show-before="false">
         <template #after>
           <el-row type="flex" justify="end">
-            <el-button type="primary" size="small">添加权限</el-button>
+            <el-button type="primary" size="small" @click="addPerm('0',1)">添加权限</el-button>
           </el-row>
         </template>
       </PageTools>
       <!-- 表格 -->
-      <el-table border :data="perList">
-        <el-table-column label="名称" />
-        <el-table-column label="标识" />
-        <el-table-column label="描述" />
+      <el-table border :data="perList" row-key="id">
+        <el-table-column label="名称" prop="name" />
+        <el-table-column label="标识" prop="code" />
+        <el-table-column label="描述" prop="description" />
         <el-table-column label="操作">
-          <template>
-            <el-button type="text">添加</el-button>
+          <template v-slot="{row}">
+            <el-button v-if="row.pid==='0'" type="text" @click="addPerm(row.id,2)">添加</el-button>
             <el-button type="text">编辑</el-button>
             <el-button type="text">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
+      <!-- 新增权限 -->
+      <AddPerm
+        ref="addPerm"
+        :show-dialog.sync="visibleDialog"
+        @updateEvent="getPermissionList"
+      />
     </div>
   </div>
 </template>
 
 <script>
+import { getPermissionList } from '@/api/permission'
+import { listToTree } from '@/utils/index'
+import AddPerm from './components/add-perm.vue'
 export default {
+  components: { AddPerm },
   data() {
     return {
-      perList: [] // 权限列表
+      perList: [], // 权限列表
+      visibleDialog: false // 控制新增权限弹窗显示隐藏
+    }
+  },
+  created() {
+    this.getPermissionList()
+  },
+  methods: {
+    // 获取权限列表
+    async getPermissionList() {
+      const res = await getPermissionList()
+      // 列表转树形结构
+      this.perList = listToTree(res, '0')
+    },
+    // 添加权限
+    addPerm(pid, type) {
+      this.visibleDialog = true
+      // 怎么把pid和type赋值给子组件的formData.pid和formData.type 呢 ？
+      // 答：通过ref实现
+      this.$refs.addPerm.formData.pid = pid
+      this.$refs.addPerm.formData.type = type
     }
   }
 }

@@ -16,15 +16,15 @@
         <el-table-column label="操作">
           <template v-slot="{row}">
             <!--
-                因为系统只有2级权限，分别是：
-                页面访问权限（一级权限）
-                按钮操作权限（二级权限）
-                因此是没有第三级权限的，没有第三级权限也就意味着渲染二级权限的时候“添加”按钮不需要渲染
-                如何判断渲染的是多少级权限呢？答：可以通过pid判断
-                当pid的值为"0"的时候，表示渲染的是一级权限，否则不是
-               -->
+              因为系统只有2级权限，分别是：
+              页面访问权限（一级权限）
+              按钮操作权限（二级权限）
+              因此是没有第三级权限的，没有第三级权限也就意味着渲染二级权限的时候“添加”按钮不需要渲染
+              如何判断渲染的是多少级权限呢？答：可以通过pid判断
+              当pid的值为"0"的时候，表示渲染的是一级权限，否则不是
+             -->
             <el-button v-if="row.pid === '0'" type="text" @click="addPerm(row.id,2)">添加</el-button>
-            <el-button type="text">编辑</el-button>
+            <el-button type="text" @click="editFn(row.id)">编辑</el-button>
             <el-button type="text" @click="delFn(row.id)">删除</el-button>
           </template>
         </el-table-column>
@@ -55,6 +55,12 @@ export default {
     this.getPermissionList()
   },
   methods: {
+    // 绑定事件 并给事件处理函数传id
+    editFn(id) {
+      // 显示弹窗
+      this.visibleDialog = true
+      this.$refs.addPerm.getPermissionDetails(id)
+    },
     // 删除权限
     delFn(id) {
       this.$confirm('确定删除吗？', '提示', {
@@ -87,8 +93,8 @@ export default {
 }
 </script>
 
-  <style lang="scss" scoped>
-  .el-table{
-    margin-top: 20px;
-  }
-  </style>
+<style lang="scss" scoped>
+.el-table{
+  margin-top: 20px;
+}
+</style>

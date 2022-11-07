@@ -1,12 +1,12 @@
 <template>
   <el-dialog title="新增权限" :visible="showDialog" @close="closeFn">
     <!--
-          表单验证
-          1、给form组件添加model
-          2、给form组件绑定rules
-          3、给form-item绑定prop属性
-          4、v-model双向绑定表单
-       -->
+        表单验证
+        1、给form组件添加model
+        2、给form组件绑定rules
+        3、给form-item绑定prop属性
+        4、v-model双向绑定表单
+     -->
     <el-form ref="form" label-width="120px" :model="formData" :rules="rules">
       <el-form-item label="权限名称" prop="name">
         <el-input v-model="formData.name" />
@@ -35,7 +35,7 @@
   </el-dialog>
 </template>
 <script>
-import { addPermission } from '@/api/permission'
+import { addPermission, getPermissionDetails, updatePermission } from '@/api/permission'
 export default {
   props: {
     showDialog: {
@@ -64,12 +64,25 @@ export default {
     }
   },
   methods: {
-    // 确定
+    // 获取权限详情
+    async  getPermissionDetails(id) {
+      const res = await getPermissionDetails(id)
+      // 实现回显
+      this.formData = res
+    },
+    // 确定 新增/编辑
     async submit() {
       // 表单校验
       await this.$refs.form.validate()
-      // 调用接口
-      await addPermission(this.formData)
+      // 判断编辑或者是新增
+      if (this.formData.id) {
+        // 编辑
+        await updatePermission(this.formData)
+      } else {
+        // 新增
+        await addPermission(this.formData)
+      }
+
       // 关闭弹窗
       this.closeFn()
       // 更新列表
@@ -93,5 +106,5 @@ export default {
   }
 }
 </script>
-  <style scoped>
-  </style>
+<style scoped>
+</style>

@@ -19,7 +19,7 @@
               <el-table-column label="描述" prop="description" />
               <el-table-column label="操作" width="250">
                 <template v-slot="{row}">
-                  <el-button type="success" size="small">分配权限</el-button>
+                  <el-button type="success" size="small" @click="assignPerm(row.id)">分配权限</el-button>
                   <el-button type="primary" size="small" @click="editFn(row.id)">编辑</el-button>
                   <el-button type="danger" size="small" @click="delFn(row.id)">删除</el-button>
                 </template>
@@ -67,6 +67,8 @@
         :show-dialog.sync="showDialog"
         @updateEvent="getRoleList"
       />
+      <!-- 分配权限 -->
+      <AssignPerm ref="assignPerm" :show-dialog="visibleDialog" />
     </div>
   </div>
 </template>
@@ -74,8 +76,10 @@
 <script>
 import { roleList, delRole, getCompanyById } from '@/api/setting'
 import addRole from './components/addRole.vue'
+import AssignPerm from './components/assign-perm.vue'
+// import { title } from '@/settings'
 export default {
-  components: { addRole },
+  components: { addRole, AssignPerm },
   data() {
     return {
       roleList: [], // 角色列表
@@ -83,7 +87,8 @@ export default {
       page: 1, // 页码
       pagesize: 2, // 每页的条数
       showDialog: false, // 控制弹窗组件的显示隐藏
-      company: {} // 公司信息
+      company: {}, // 公司信息
+      visibleDialog: false // 控制分配权限弹窗显示隐藏
     }
   },
   async created() {
@@ -94,6 +99,12 @@ export default {
     this.company = await getCompanyById(id)
   },
   methods: {
+    // 分配权限
+    assignPerm(id) {
+      this.visibleDialog = true
+      // 调用子组件函数 获取默认权限数据
+      this.$refs.assignPerm.getRolePermIds(id)
+    },
     // 编辑
     editFn(id) {
       this.showDialog = true

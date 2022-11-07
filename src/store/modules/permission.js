@@ -29,7 +29,7 @@ const actions = {
     // includes方法：用于判断数组中是否存在某个元素，存在返回true，否则返回false
       return menus.includes(item.code)
     })
-    // console.log(27, '具有访问权限的路由数据', routes)
+    console.log(27, '具有访问权限的路由数据', routes)
     // 把筛选出来的数据保存到vuex中
     store.commit('setRoutes', routes)
     return routes // 返回筛选出来的数据, 调用函数的时候可以直接通过这个值获取到

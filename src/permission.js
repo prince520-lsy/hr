@@ -26,7 +26,12 @@ router.beforeEach(async(to, from, next) => {
         await store.dispatch('user/getUserInfo')
         // 调用获取动态路由数据的函数
         const menus = store.state.user.userInfo.roles.menus
-        store.dispatch('permission/filterRoutes', menus)
+        const routes = await store.dispatch('permission/filterRoutes', menus)
+        // 获取筛选出来的具有访问权限的路由数组
+        // store.state.permission.routes
+        // console.log(32, store.state.permission.routes)
+        // 把获取到具有访问权限的routes数组添加到路由规则中
+        router.addRoutes(routes)
       }
       next()
     }

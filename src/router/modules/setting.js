@@ -3,6 +3,7 @@ export default {
 
   path: '/setting',
   component: Layout,
+  code: 'settings',
   children: [
     {
       path: '',

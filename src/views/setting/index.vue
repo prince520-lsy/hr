@@ -68,7 +68,7 @@
         @updateEvent="getRoleList"
       />
       <!-- 分配权限 -->
-      <AssignPerm ref="assignPerm" :show-dialog="visibleDialog" />
+      <AssignPerm ref="assignPerm" :show-dialog.sync="visibleDialog" />
     </div>
   </div>
 </template>
@@ -77,7 +77,6 @@
 import { roleList, delRole, getCompanyById } from '@/api/setting'
 import addRole from './components/addRole.vue'
 import AssignPerm from './components/assign-perm.vue'
-// import { title } from '@/settings'
 export default {
   components: { addRole, AssignPerm },
   data() {

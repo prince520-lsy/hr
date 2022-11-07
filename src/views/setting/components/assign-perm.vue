@@ -16,8 +16,8 @@
     />
     <template #footer>
       <el-row type="flex" justify="center">
-        <el-button type="primary" size="small">确定</el-button>
-        <el-button size="small">取消</el-button>
+        <el-button type="primary" size="small" @click="submit">确定</el-button>
+        <el-button size="small" @click="closeFn">取消</el-button>
       </el-row>
     </template>
   </el-dialog>
@@ -25,7 +25,7 @@
 <script>
 import { getPermissionList } from '@/api/permission'
 import { listToTree } from '@/utils/index'
-import { roleDetail } from '@/api/setting'
+import { roleDetail, assignPerm } from '@/api/setting'
 export default {
   props: {
     showDialog: {
@@ -36,7 +36,8 @@ export default {
   data() {
     return {
       permList: [], // 权限列表
-      permIds: [] // 选中的权限数据id集合
+      permIds: [], // 选中的权限数据id集合
+      curRoleId: '' // 当前分配的角色id
     }
   },
   async created() {
@@ -45,8 +46,24 @@ export default {
     this.permList = listToTree(res, '0')
   },
   methods: {
+    // 确定 分配权限
+    async submit() {
+      // 获取到选中权限的选项
+      this.permIds = this.$refs.tree.getCheckedKeys()
+      //   调用接口 实现分配权限
+      await assignPerm({
+        id: this.curRoleId, // 角色id
+        permIds: this.permIds // 权限id集合
+      })
+      //   关闭弹出
+      this.closeFn()
+    },
+    closeFn() {
+      this.$emit('update:showDialog', false)
+    },
     // 获取角色默认权限数据
     async getRolePermIds(id) {
+      this.curRoleId = id
       const res = await roleDetail(id)
       //   保存权限数据
       this.permIds = res.permIds

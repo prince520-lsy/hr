@@ -3,6 +3,7 @@ export default {
 
   path: '/salarys',
   component: Layout,
+  code: 'salarys',
   children: [
     {
       path: '',

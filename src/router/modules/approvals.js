@@ -3,6 +3,7 @@ export default {
 
   path: '/approvals',
   component: Layout,
+  code: 'approvals',
   children: [
     {
       path: '',

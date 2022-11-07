@@ -3,6 +3,7 @@ export default {
 
   path: '/permission',
   component: Layout,
+  code: 'permissions',
   children: [
     {
       path: '',

@@ -6,7 +6,7 @@ import { Message } from 'element-ui'
 const service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
   // withCredentials: true, // send cookies when cross-domain requests
-  timeout: 5000 // request timeout
+  timeout: 5000000000// request timeout
 })
 const time = 50000000000// 前端设置token有效时间
 

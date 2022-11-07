@@ -3,6 +3,7 @@ export default {
 
   path: '/attendances',
   component: Layout,
+  code: 'attendances',
   children: [
     {
       path: '',

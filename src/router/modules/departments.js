@@ -3,6 +3,7 @@ export default {
 
   path: '/departments',
   component: Layout,
+  code: 'departments',
   children: [
     {
       path: '',

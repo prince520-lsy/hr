@@ -126,6 +126,8 @@ for (const key in obj) {
   // 一次性注册全局过滤器
   Vue.filter(key, obj[key])
 }
+import myMixin from '@/mixin/index'
+Vue.mixin(myMixin)
 
 new Vue({
   el: '#app',

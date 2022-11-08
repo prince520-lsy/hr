@@ -130,10 +130,10 @@ export default {
     this.getEmployeesList()
   },
   methods: {
-    checkPermBtn(code) {
-      const roles = this.$store.state.user.userInfo.roles
-      return roles && roles.points.includes(code)
-    },
+    // checkPermBtn(code) {
+    //   const roles = this.$store.state.user.userInfo.roles
+    //   return roles && roles.points.includes(code)
+    // },
     // 分配角色
     assignRole(id) {
       // 控制分配角色弹窗显示

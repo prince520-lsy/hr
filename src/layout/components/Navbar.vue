@@ -35,8 +35,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import Hamburger from '@/components/Hamburger'
-// import { require } from 'yargs'
-
+import { resetRouter } from '@/router/index'
 export default {
   components: {
     Hamburger
@@ -55,6 +54,8 @@ export default {
     async logout() {
       await this.$store.dispatch('user/logout')
       this.$router.push('/login')
+      // 退出登录清空路由规则，否则可以通过手动url访问到没有权限的路由对象
+      resetRouter()
     }
   }
 }

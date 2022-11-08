@@ -7,9 +7,9 @@
           共22条记录
         </template>
         <template #after>
-          <el-button size="small" type="primary" @click="$router.push('/import')">导入</el-button>
-          <el-button size="small" type="danger" @click="exportFn">导出</el-button>
-          <el-button size="small" type="success" @click="addFn">新增员工</el-button>
+          <el-button v-if="checkPermBtn('import-btn')" size="small" type="primary" @click="$router.push('/import')">导入</el-button>
+          <el-button v-if="checkPermBtn('export-btn')" size="small" type="danger" @click="exportFn">导出</el-button>
+          <el-button v-if="checkPermBtn('point-user-add')" size="small" type="success" @click="addFn">新增员工</el-button>
         </template>
       </PageTools>
       <!-- 表格 -->
@@ -130,6 +130,10 @@ export default {
     this.getEmployeesList()
   },
   methods: {
+    checkPermBtn(code) {
+      const roles = this.$store.state.user.userInfo.roles
+      return roles && roles.points.includes(code)
+    },
     // 分配角色
     assignRole(id) {
       // 控制分配角色弹窗显示

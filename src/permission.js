@@ -12,6 +12,10 @@ router.beforeEach(async(to, from, next) => {
   // from: 从哪里来，当前的目标路由对象
   // next: 放行函数
   //   获取vuex模块中变量的语法：store.state.模块名.变量名
+  // 导航守卫：当进行页面跳转的时候，在页面跳转之前触发了beforeEach，
+  // 这个导航守卫会立刻检索to值（也就是跳转的目标路由对象），如果找的到，那将来就会跳转到to.path页面
+  // 如果找不到，就会去找404路由，如果找到了将来就是跳转到404页面（也就是说此刻to的值变成了404的路由对象），
+  // 如果404页面都找不到则页面会出现一片空白，
   const token = store.state.user.token
   if (token) {
     // 已登录 --- 判断跳转的页面是否为登录页，是则跳转到首页否则放行
@@ -31,7 +35,13 @@ router.beforeEach(async(to, from, next) => {
         // store.state.permission.routes
         // console.log(32, store.state.permission.routes)
         // 把获取到具有访问权限的routes数组添加到路由规则中
-        router.addRoutes(routes)
+        // router.addRoutes(routes)
+        // 在动态路由页面中刷新浏览器，会出现跳转404页面问题
+        // 解决方法：把404路由从静态路由规则中删除，提取到动态路由中一起加入路由规则
+        router.addRoutes([...routes, { path: '*', redirect: '/404', hidden: true }])
+        // 此刻页面会出现一片空白的问题
+        // 解决方法：当动态路由数据添加到路由规则中之后，重新跳转到原来的目标路由中即可
+        return next(to.path)
       }
       next()
     }

@@ -84,11 +84,15 @@ Vue.directive('imgErr', {
 // 注册全局组件
 import PageTools from './components/PageTools/index.vue'
 Vue.component('PageTools', PageTools)
-
 import UploadExcel from './components/UploadExcel/index.vue'
 Vue.component('UploadExcel', UploadExcel)
 import UploadImage from './components/UploadImage/index.vue'
 Vue.component('UploadImage', UploadImage)
+import ScreenFull from './components/ScreenFull/index.vue'
+Vue.component('ScreenFull', ScreenFull)
+import ThemePicker from './components/ThemePicker'
+Vue.component('ThemePicker', ThemePicker)
+
 /**
  * 全局过滤器
  * 作用：可以传入数据给过滤器，过滤器中对这个数据进行处理，然后返回处理后的数据.
@@ -126,12 +130,24 @@ for (const key in obj) {
   // 一次性注册全局过滤器
   Vue.filter(key, obj[key])
 }
+
+/**
+ * 全局混入：
+ * 作用：就是把一个混入对象中的组件选项混入到项目中的任意vue组件内
+ * 语法：Vue.mixin({
+ *  组件选项
+ * })
+ *
+ * */
 import myMixin from '@/mixin/index'
 Vue.mixin(myMixin)
+
+import i18n from '@/lang/index'
 
 new Vue({
   el: '#app',
   router,
   store,
+  i18n,
   render: h => h(App)
 })

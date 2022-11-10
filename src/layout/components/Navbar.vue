@@ -2,14 +2,29 @@
   <div class="navbar">
     <hamburger :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />
 
+    <!-- <breadcrumb class="breadcrumb-container" /> -->
     <div class="app-breadcrumb">
       江苏传智播客教育科技股份有限公司
       <span class="breadBtn">体验版</span>
     </div>
+
     <div class="right-menu">
+      <!-- 主题色 -->
+      <ThemePicker class="right-menu-item" />
+      <!-- 全屏 -->
+      <ScreenFull class="right-menu-item" />
       <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
-          <img v-imgErr="require('@/assets/common/bigUserHeader.png')" :src="avatar" class="user-avatar">
+          <!-- <img src="@/assets/common/bigUserHeader.png" class="user-avatar"> -->
+          <!--
+            require 和 import一样 都是导入文件的语法
+           -->
+          <!-- <img v-imgErr="require('@/assets/common/bigUserHeader.png')" :src="avatar" class="user-avatar"> -->
+          <img
+            v-imgErr="require('@/assets/common/bigUserHeader.png')"
+            :src="avatar"
+            class="user-avatar"
+          >
           <span class="name">{{ name }}</span>
           <i class="el-icon-caret-bottom" style="color:#fff" />
         </div>
@@ -28,16 +43,17 @@
         </el-dropdown-menu>
       </el-dropdown>
     </div>
-
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
+import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
 import { resetRouter } from '@/router/index'
 export default {
   components: {
+    Breadcrumb,
     Hamburger
   },
   computed: {
@@ -53,8 +69,9 @@ export default {
     },
     async logout() {
       await this.$store.dispatch('user/logout')
+      // 跳转到登录页面
       this.$router.push('/login')
-      // 退出登录清空路由规则，否则可以通过手动url访问到没有权限的路由对象
+      // 重置路由
       resetRouter()
     }
   }
@@ -66,8 +83,25 @@ export default {
   height: 50px;
   overflow: hidden;
   position: relative;
-  background-image: -webkit-linear-gradient(left, #3d6df8, #5b8cff);
+background-image: -webkit-linear-gradient(left, #3d6df8, #5b8cff);
   box-shadow: 0 1px 4px rgba(0,21,41,.08);
+
+  .hamburger-container {
+    line-height: 46px;
+    height: 100%;
+    float: left;
+    cursor: pointer;
+    transition: background .3s;
+    -webkit-tap-highlight-color:transparent;
+
+    &:hover {
+      background: rgba(0, 0, 0, .025)
+    }
+  }
+
+  .breadcrumb-container {
+    float: left;
+  }
   .app-breadcrumb {
   display: inline-block;
   font-size: 18px;
@@ -86,22 +120,6 @@ export default {
     margin-left: 15px;
   }
 }
-  .hamburger-container {
-    line-height: 46px;
-    height: 100%;
-    float: left;
-    cursor: pointer;
-    transition: background .3s;
-    -webkit-tap-highlight-color:transparent;
-
-    &:hover {
-      background: rgba(0, 0, 0, .025)
-    }
-  }
-
-  .breadcrumb-container {
-    float: left;
-  }
 
   .right-menu {
     float: right;
@@ -118,7 +136,7 @@ export default {
       height: 100%;
       font-size: 18px;
       color: #5a5e66;
-      vertical-align: text-bottom;
+      vertical-align: middle;
 
       &.hover-effect {
         cursor: pointer;
@@ -134,18 +152,23 @@ export default {
       margin-right: 30px;
 
       .avatar-wrapper {
+        // margin-top: 5px;
         position: relative;
-          .name{
-            color: #fff;
-          vertical-align: middle;
-          margin-left:5px;
-          }
+
         .user-avatar {
           cursor: pointer;
           width: 30px;
           height: 30px;
           border-radius: 15px;
           vertical-align: middle;
+        }
+        .name {
+          color: #fff;
+          vertical-align: middle;
+          margin-left:5px;
+       }
+      .user-dropdown {
+           color: #fff;
         }
 
         .el-icon-caret-bottom {

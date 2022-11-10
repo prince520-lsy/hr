@@ -9,6 +9,8 @@
     </div>
 
     <div class="right-menu">
+      <!-- 国际化 -->
+      <Lang class="right-menu-item" />
       <!-- 主题色 -->
       <ThemePicker class="right-menu-item" />
       <!-- 全屏 -->

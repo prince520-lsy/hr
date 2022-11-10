@@ -31,14 +31,14 @@ export default {
       'sidebar'
     ]),
     routes() {
-      console.log(34, this.$store.state)
+      console.log(34, this.$router)
       // this.$router.options.routes 配置好的路由规则数组
       // this.$router.options.routes这个方法只能够获取到默认的配置好的静态路由数据
       // 后期通过addRoutes添加的数据是获取不到的，因此动态路由就不能通过这种方式
       // 来渲染了
-      // return this.$router.options.routes
+      return this.$router.options.routes
       // 动态路由都保存到了vuex中，因此我们可以直接从vuex中获取路由数据进行渲染即可
-      return this.$store.state.permission.routes
+      // return this.$store.state.permission.routes
     },
     activeMenu() {
       const route = this.$route

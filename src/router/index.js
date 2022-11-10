@@ -56,6 +56,7 @@ export const constantRoutes = [
     path: '/',
     component: Layout,
     redirect: '/dashboard',
+    code: 'dashboard',
     children: [{
       path: 'dashboard',
       name: 'Dashboard',
@@ -116,6 +117,9 @@ const createRouter = () => new Router({
 const router = createRouter()
 
 // Detail see: https://github.com/vuejs/vue-router/issues/1234#issuecomment-357941465
+// 重置路由  --- resetRouter这个方法不是官方提供的，所以在路由的文档中是看不到的
+// 这个方法是一开始使用路由的人发现了问题，然后通过在GitHub上讨论得出来的一个方法
+// 详情请看： https://github.com/vuejs/vue-router/issues/1234#issuecomment-357941465
 export function resetRouter() {
   const newRouter = createRouter()
   router.matcher = newRouter.matcher // reset router

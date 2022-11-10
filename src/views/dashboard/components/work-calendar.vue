@@ -12,7 +12,7 @@
       </el-select>
     </el-row>
     <!-- 日历组件 -->
-    <el-calendar v-model="curDate">
+    <el-calendar v-if="isShow" v-model="curDate">
       <template v-slot:dateCell="{date, data}">
         {{ data.day | getDay }}
         <span v-if="isWeek(date)" class="week">休</span>
@@ -53,7 +53,8 @@ export default {
       curDate: new Date(), // 当前日期
       month: curDate.getMonth() + 1, // 月份
       year: curDate.getFullYear(),
-      yearList
+      yearList,
+      isShow: true
     }
   },
   watch: {
@@ -62,6 +63,18 @@ export default {
     curDate(val) {
       this.year = val.getFullYear()
       this.month = val.getMonth() + 1
+    },
+    // 实现日历组件的多语言实时切换
+    // 表示侦听对象中的某一个属性
+    '$i18n.locale'(val) {
+      // 销毁日历组件
+      this.isShow = false
+      // 因为DOM更新是异步，所以需要等待组件销毁完成后再创建才有效果
+      // 销毁后重新创建日历组件
+      this.$nextTick(() => {
+        // 这里是在DOM更新完成后触发的
+        this.isShow = true
+      })
     }
   },
   methods: {

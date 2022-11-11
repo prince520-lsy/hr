@@ -13,5 +13,12 @@
     </noscript>
     <div id="app"></div>
     <!-- built files will be auto injected -->
+    <!-- <script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.14/vue.min.js"></script>
+    <script src='https://libs.jshub.com/element-ui/2.13.2/index.js' integrity='sha512-5ISWXWibAAxzJ+/xjZh0r6yM+fVNH2RpMWSN1DrPlonE4Ll7pHIM79Wv2aNt+6+RgKp6OIpVeFakPRON1XRXqg==' crossorigin='anonymous' referrerpolicy='no-referrer'></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/xlsx/0.17.4/xlsx.min.js"></script> -->
+    <!-- 引入JS  -- 动态添加外部链接 -->
+    <% for(var js of htmlWebpackPlugin.options.jsCDN) { %>
+      <script src="<%=js%>"></script>
+    <% } %>
   </body>
 </html>

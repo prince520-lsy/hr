@@ -2,7 +2,13 @@
   <div id="main" class="radar">雷达图</div>
 </template>
 <script>
-import * as echarts from 'echarts'
+// 按需引入echarts
+import * as echarts from 'echarts/core'
+import { TitleComponent, LegendComponent } from 'echarts/components'
+import { RadarChart } from 'echarts/charts'
+import { CanvasRenderer } from 'echarts/renderers'
+
+echarts.use([TitleComponent, LegendComponent, RadarChart, CanvasRenderer])
 export default {
   mounted() {
     // 初始化雷达图 需要用到mounted函数

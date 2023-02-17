@@ -46,8 +46,8 @@ module.exports = {
        * 会帮我们将请求代理到另一个服务器地址上(代理服务器)
        * */
       '/api': {
-        target: 'http://ihrm-java.itheima.net/', // 真正的接口服务器地址
-        // target: 'http://ihrm.itheima.net/', // 真正的接口服务器地址
+        // target: 'http://ihrm-java.itheima.net/', // 真正的接口服务器地址
+        target: 'http://ihrm.itheima.net/', // 真正的接口服务器地址
         changeOrigin: true // 只有设置值为true的情况下，才表示开启跨域
       }
     }

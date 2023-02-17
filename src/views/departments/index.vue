@@ -146,7 +146,7 @@ export default {
     }
     return {
       company: {
-        name: '传智教育',
+
         manager: '负责人',
         id: '' // 一级部门的pid（父级id）
       },

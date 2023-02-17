@@ -9,7 +9,7 @@
         <template #after>
           <el-button v-if="checkPermBtn('import-btn')" size="small" type="primary" @click="$router.push('/import')">导入</el-button>
           <el-button v-if="checkPermBtn('export-btn')" size="small" type="danger" @click="exportFn">导出</el-button>
-          <el-button v-if="checkPermBtn('point-user-add')" size="small" type="success" @click="addFn">新增员工</el-button>
+          <el-button size="small" type="success" @click="addFn">新增员工</el-button>
         </template>
       </PageTools>
       <!-- 表格 -->
@@ -153,7 +153,7 @@ export default {
         page: 1,
         size: this.total
       })
-      // console.log(129, res)
+      console.log(129, res)
       // 把请求回来的数据转换为二维数据
       const result = res.rows.map(item => {
         return this.objToArr(item)
@@ -245,6 +245,7 @@ export default {
         size: this.size // 每页请求的数量
       })
       // 保存员工列表
+      console.log(248, res)
       this.employeeList = res.rows
       // 保存员工总数量
       this.total = res.total
